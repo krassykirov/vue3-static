@@ -194,29 +194,12 @@ button.normal {
   justify-content: center;
   align-items: flex-start;
   text-align: center;
-  background-image: url('../assets/laptop-banner.jpeg');
   min-width: 520px;
   height: 40vh;
   background-position: center;
   background-size: cover;
   padding: 30px;
   margin-bottom: 5px;
-}
-
-#sm-banner .banner-box2 {
-  background-image: url('../assets/smartphone-banner.png');
-}
-#sm-banner .banner-box3 {
-  background-image: url('../assets/ipad.jpeg');
-}
-#sm-banner .banner-box4 {
-  background-image: url('../assets/smart-watch-banner.jpg');
-}
-#sm-banner .banner-box5 {
-  background-image: url('../assets/tv-banner.webp');
-}
-#sm-banner .banner-box6 {
-  background-image: url('../assets/smartwatches-banner.webp');
 }
 
 #sm-banner {
