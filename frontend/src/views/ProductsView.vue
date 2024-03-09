@@ -291,15 +291,19 @@
             </div>
           </div>
         </div>
+        <!-- <PriceSlider /> -->
       </div>
-      <template v-if="isLoading">
-        <div style="align-items: center; margin-left: 10%">
+      <template
+        v-if="isLoading && filteredProducts && filteredProducts.length === 0"
+      >
+        <div style="align-items: center; margin-left: 1%; margin-top: 3%">
           <img :src="require('@/assets/loading.gif')" />
         </div>
       </template>
       <template v-if="filteredProducts && filteredProducts.length > 0">
         <div class="product-list" id="mycard">
           <transition-group name="product-fade">
+            <!-- Render ProductList if there are filteredProducts -->
             <ProductList
               :products="paginatedProducts"
               :key="products"
@@ -317,8 +321,12 @@
           </transition-group>
         </div>
       </template>
-      <template v-else-if="filteredProducts.length === 0">
-        <div style="align-items: center; margin-left: 10%">
+      <template
+        v-else-if="
+          !isLoading && filteredProducts && filteredProducts.length === 0
+        "
+      >
+        <div style="align-items: center; margin-left: 1%; margin-top: 3%">
           <img :src="require('@/assets/no_result.gif')" />
         </div>
       </template>
@@ -397,9 +405,10 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
+    this.isLoading = true
+    if (this.filteredProducts.length > 0) {
       this.isLoading = false
-    }, 500)
+    }
   },
   created() {
     if (!this.$store.state.accessToken) {

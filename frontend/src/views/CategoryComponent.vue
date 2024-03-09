@@ -298,8 +298,10 @@
           </div>
         </div>
       </div>
-      <template v-if="isLoading">
-        <div style="align-items: center; margin-left: 10%">
+      <template
+        v-if="isLoading && selectedProducts && selectedProducts.length === 0"
+      >
+        <div style="align-items: center; margin-left: 1%; margin-top: 3%">
           <img :src="require('@/assets/loading.gif')" />
         </div>
       </template>
@@ -326,8 +328,12 @@
           </transition-group>
         </div>
       </template>
-      <template v-else-if="selectedProducts && selectedProducts.length === 0">
-        <div style="align-items: center; margin-left: 10%">
+      <template
+        v-else-if="
+          !isLoading && selectedProducts && selectedProducts.length === 0
+        "
+      >
+        <div style="align-items: center; margin-left: 1%; margin-top: 3%">
           <img :src="require('@/assets/no_result.gif')" />
         </div>
       </template>
@@ -361,9 +367,10 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
+    this.isLoading = true
+    if (this.filteredProducts.length > 0) {
       this.isLoading = false
-    }, 500)
+    }
   },
   created() {
     if (!this.$store.state.accessToken) {
@@ -506,9 +513,6 @@ export default {
     profile() {
       return this.$store.getters.profile
     },
-    // currentCategory() {
-    //   return this.$store.getters.currentCategory
-    // },
     sortOrder() {
       return this.$store.getters.sortOrder
     }
