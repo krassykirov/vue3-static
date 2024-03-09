@@ -368,7 +368,7 @@ export default {
   },
   mounted() {
     this.isLoading = true
-    if (this.filteredProducts.length > 0) {
+    if (this.selectedProducts.length > 0) {
       this.isLoading = false
     }
   },
