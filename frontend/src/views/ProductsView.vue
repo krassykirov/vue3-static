@@ -314,6 +314,11 @@
           </transition-group>
         </div>
       </template>
+      <template v-else-if="filteredProducts && filteredProducts.length === 0">
+        <div style="align-items: center; margin-left: 10%">
+          <img :src="require('@/assets/no_result.gif')" />
+        </div>
+      </template>
       <template v-else>
         <div style="align-items: center; margin-left: 10%">
           <img :src="require('@/assets/loading.gif')" />

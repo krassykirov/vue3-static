@@ -573,10 +573,10 @@ export default {
         const filteredProducts = this.$store.state.products.filter(
           product => product.category_id === categoryId
         )
-        const items = filteredProducts // Assuming products are stored in the store
+        const items = filteredProducts
         const count = items.reduce((accumulator, item) => {
           const floatRating = parseFloat(item.rating_float)
-          const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+          const roundedRating = Math.floor(floatRating + 0.5)
           if (roundedRating === rating) {
             return accumulator + 1
           }
