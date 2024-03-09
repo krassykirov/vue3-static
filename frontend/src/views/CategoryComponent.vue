@@ -298,6 +298,11 @@
           </div>
         </div>
       </div>
+      <template v-if="isLoading">
+        <div style="align-items: center; margin-left: 10%">
+          <img :src="require('@/assets/loading.gif')" />
+        </div>
+      </template>
       <template v-if="selectedProducts && selectedProducts.length > 0">
         <div class="product-list" id="mycard" style="margin-top: 3%">
           <transition-group name="product-fade">
@@ -321,9 +326,9 @@
           </transition-group>
         </div>
       </template>
-      <template v-else>
+      <template v-else-if="selectedProducts && selectedProducts.length === 0">
         <div style="align-items: center; margin-left: 10%">
-          <img :src="require('@/assets/loading.gif')" />
+          <img :src="require('@/assets/no_result.gif')" />
         </div>
       </template>
     </div>
@@ -351,8 +356,14 @@ export default {
     return {
       isChecked: this.$store.state.isDiscountedChecked,
       backendEndpoint: `${config.backendEndpoint}`,
-      categoryName: null
+      categoryName: null,
+      isLoading: true
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.isLoading = false
+    }, 500)
   },
   created() {
     if (!this.$store.state.accessToken) {
