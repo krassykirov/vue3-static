@@ -296,8 +296,8 @@
       <template
         v-if="isLoading && filteredProducts && filteredProducts.length === 0"
       >
-        <div style="align-items: center; margin-left: 1%; margin-top: 3%">
-          <img :src="require('@/assets/loading.gif')" />
+        <div style="align-items: center; margin-left: 25%; margin-top: 5%">
+          <img :src="require('@/assets/loading2.gif')" />
         </div>
       </template>
       <template v-if="filteredProducts && filteredProducts.length > 0">
