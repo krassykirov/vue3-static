@@ -368,7 +368,7 @@ export default {
   },
   mounted() {
     this.isLoading = true
-    if (this.selectedProducts.length > 0) {
+    if (this.filteredProducts.length > 0 || this.filteredProducts.length > 0) {
       this.isLoading = false
     }
   },
@@ -388,7 +388,8 @@ export default {
     const category = this.$route.params.category
     if (category) {
       this.$store
-        .dispatch('fetchCategories')
+        .dispatch('getProducts')
+        .then(() => this.$store.dispatch('fetchCategories'))
         .then(() => this.$store.dispatch('updateProductRange', category))
         .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
         .catch(error => {
