@@ -333,7 +333,7 @@
           !isLoading && selectedProducts && selectedProducts.length === 0
         "
       >
-        <div style="align-items: center; margin-left: 1%; margin-top: 3%">
+        <div style="align-items: center; margin-left: 10%; margin-top: 3%">
           <img :src="require('@/assets/no_result.gif')" />
         </div>
       </template>
