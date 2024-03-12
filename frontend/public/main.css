@@ -1,4 +1,6 @@
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+/* @import url("https://fonts.googleapis.com/css?family=Raleway"); */
+
 html {
   width: 100vw;
 }
@@ -366,10 +368,10 @@ INPUT[type="checkbox"]:disabled {
   flex-grow: 1;
   padding-right: 1%;
   padding-left: 0.03%;
-  margin-top: 1.65%;
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  text-align: left;
 }
 
 .filter-card {
@@ -480,4 +482,10 @@ INPUT[type="checkbox"]:disabled {
   }
   .link:hover {
     color: #0d6efd /* Change color on hover */
+  }
+
+  .disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: grey;
   }

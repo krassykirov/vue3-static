@@ -16,28 +16,6 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
-    <div
-      class="toast"
-      id="cartToast"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-      data-bs-autohide="false"
-      style="
-        position: fixed;
-        top: 12%;
-        right: 2%;
-        transform: translate(0, -50%);
-        width: 250px;
-        z-index: 1000;
-      "
-    >
-      <div
-        class="toast-body"
-        id="cartToastBody"
-        style="font-weight: 500; font: 1.1rem"
-      ></div>
-    </div>
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
@@ -65,6 +43,7 @@
                     type="checkbox"
                     class="cat-checkbox"
                     :data-category="category[2]"
+                    :data-category-name="category[0]"
                     :disabled="category[1] === 0"
                     @change="handleCategoryChange"
                   />
@@ -148,6 +127,7 @@
                 <div class="slider-container">
                   <div
                     class="price-slider"
+                    :class="{ disabled: isPriceRangesSelected }"
                     :style="{
                       left: `${(min / productMax) * 100}%`,
                       right: `${100 - (max / productMax) * 100}%`
@@ -158,7 +138,7 @@
             </div>
           </div>
           <!-- Slider -->
-          <div class="range-input">
+          <div class="range-input" :class="{ disabled: isPriceRangesSelected }">
             <input
               type="range"
               class="min-range"
@@ -167,6 +147,7 @@
               :value="min"
               step="1"
               @input="updateInputs"
+              :disabled="isPriceRangesSelected"
             />
             <input
               type="range"
@@ -176,27 +157,46 @@
               :value="max"
               step="1"
               @input="updateInputs"
+              :disabled="isPriceRangesSelected"
             />
           </div>
-          <div style="padding-top: 11%; padding-bottom: 1%">
-            <button
-              type="button"
-              class="custom-button"
-              @click="toggleSortOrder"
-              style="align-items: center; font-size: 0.8rem"
+          <div style="padding-top: 11%; padding-bottom: 0"></div>
+        </div>
+        <div class="filter-card">
+          <div class="card-body">
+            <label style="font-size: 0.9rem; display: block; font-weight: 500">
+              Price Range
+            </label>
+            <!-- Price range checkboxes -->
+            <div
+              class="form-check"
+              style="padding-left: 5px"
+              v-for="(range, index) in priceRanges"
+              :key="index"
             >
-              Sort Price
+              <input
+                type="checkbox"
+                class="price-checkbox"
+                :value="range.value"
+                :price-range="range.value"
+                :data-price-label="range.label"
+                style="font-size: 0.9rem; margin-bottom: 2px; margin-left: 0"
+                @change="handlePriceRangeChange"
+              />
+              <label :for="range.value" style="margin-left: 5px">{{
+                range.label
+              }}</label>
               <span
-                v-if="sortOrder === 'asc'"
-                class="bi bi-sort-up-alt"
-                style="font-size: 0.9rem"
-              ></span>
-              <span
-                v-else
-                class="bi bi-sort-down"
-                style="font-size: 0.9rem"
-              ></span>
-            </button>
+                class="text-muted"
+                style="
+                  font-size: 0.8rem;
+                  font-family: sans-serif;
+                  font-weight: 500;
+                "
+              >
+                ({{ getProductCount(range.value) }})
+              </span>
+            </div>
           </div>
         </div>
         <div
@@ -255,7 +255,7 @@
             >
               <input
                 style="font-size: 0.9rem; margin-bottom: 8px; margin-left: 8px"
-                class="brand-checkbox"
+                class="rating-checkbox"
                 type="checkbox"
                 :id="'rating' + rating"
                 :value="rating"
@@ -291,7 +291,6 @@
             </div>
           </div>
         </div>
-        <!-- <PriceSlider /> -->
       </div>
       <template
         v-if="isLoading && filteredProducts && filteredProducts.length === 0"
@@ -302,6 +301,68 @@
       </template>
       <template v-if="filteredProducts && filteredProducts.length > 0">
         <div class="product-list" id="mycard">
+          <template v-if="appliedFilters && appliedFilters.length > 0">
+            <div
+              class="container"
+              style="
+                margin-top: 4%;
+                border: 1px solid #cfcdcd;
+                margin-left: 0;
+                margin-bottom: 0;
+                width: 1187px !important;
+                max-height: 200px;
+              "
+            >
+              <p
+                style="
+                  font-weight: 500;
+                  font-size: 0.9rem;
+                  margin-bottom: 0;
+                  margin-top: 5px;
+                "
+              >
+                Active Filters {{ filteredProducts.length }} Products
+              </p>
+              <button
+                v-for="(filter, index) in appliedFilters"
+                :key="index"
+                class="shadow btn custom-btn"
+                style="margin-bottom: 0; margin-top: 10px"
+                @click="removeFilter(filter)"
+              >
+                {{ filter }}
+              </button>
+              <hr />
+              <p style="margin-top: 10px; margin-left: 0">
+                <button
+                  type="button"
+                  class="shadow btn custom-btn"
+                  @click="toggleSortOrder"
+                  style="align-items: center; background-color: #7ca8b4"
+                >
+                  Sort Price
+                  <span
+                    v-if="sortOrder === 'asc'"
+                    class="bi bi-sort-up-alt"
+                    style="font-size: 0.9rem"
+                  ></span>
+                  <span
+                    v-else
+                    class="bi bi-sort-down"
+                    style="font-size: 0.9rem"
+                  ></span>
+                </button>
+                <button
+                  v-if="appliedFilters.length > 0"
+                  class="shadow btn custom-btn"
+                  @click="removeAllFilters"
+                  style="margin-bottom: 15px; background-color: #d55327"
+                >
+                  Reset Filters
+                </button>
+              </p>
+            </div>
+          </template>
           <transition-group name="product-fade">
             <!-- Render ProductList if there are filteredProducts -->
             <ProductList
@@ -326,8 +387,63 @@
           !isLoading && filteredProducts && filteredProducts.length === 0
         "
       >
-        <div style="align-items: center; margin-left: 10%; margin-top: 3%">
-          <img :src="require('@/assets/no_result.gif')" />
+        <div style="align-items: center; margin-left: 0; margin-top: 1%">
+          <div
+            class="container"
+            style="
+              margin-top: 3%;
+              border: 1px solid #cfcdcd;
+              margin-left: 0;
+              margin-bottom: 0;
+              width: 1187px !important;
+              min-width: 1140px !important;
+              max-height: 170px;
+            "
+          >
+            <p
+              style="
+                font-weight: 400;
+                font-size: 0.9rem;
+                margin-bottom: 0;
+                margin-top: 5px;
+              "
+            >
+              Active Filters:
+            </p>
+            <button
+              v-for="(filter, index) in appliedFilters"
+              :key="index"
+              class="btn btn-outline-secondary btn-sm ml-2"
+              style="margin-bottom: 0; margin-top: 10px"
+              @click="removeFilter(filter)"
+            >
+              {{ filter }}
+            </button>
+            <p style="margin-top: 10px; margin-left: 0">
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm ml-2"
+                @click="toggleSortOrder"
+                style="align-items: center; font-size: 0.9rem"
+              >
+                Sort Price
+                <span
+                  v-if="sortOrder === 'asc'"
+                  class="bi bi-sort-up-alt"
+                  style="font-size: 0.9rem"
+                ></span>
+                <span
+                  v-else
+                  class="bi bi-sort-down"
+                  style="font-size: 0.9rem"
+                ></span>
+              </button>
+            </p>
+          </div>
+          <img
+            :src="require('@/assets/no_result.gif')"
+            style="margin-left: 15%"
+          />
         </div>
       </template>
     </div>
@@ -362,6 +478,28 @@
       </ul>
     </nav>
     <Footer />
+    <div
+      class="toast"
+      id="cartToast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-bs-autohide="false"
+      style="
+        position: fixed;
+        top: 12%;
+        right: 2%;
+        transform: translate(0, -50%);
+        width: 250px;
+        z-index: 1000;
+      "
+    >
+      <div
+        class="toast-body"
+        id="cartToastBody"
+        style="font-weight: 500; font: 1.1rem"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -401,8 +539,26 @@ export default {
       currentPage: 1,
       itemsPerPage: 32,
       visiblePageRange: 5,
-      isLoading: true
+      isLoading: true,
+      appliedFilters: [],
+      priceRanges: [
+        { value: 'range1', label: 'Under $500' },
+        { value: 'range2', label: '$500 - $1000' },
+        { value: 'range3', label: '$1000 - $2000' },
+        { value: 'range4', label: '$2000 & Above' }
+      ]
     }
+  },
+  watch: {
+    filteredProducts() {
+      this.updateAppliedFilters()
+    }
+  },
+  updated() {
+    this.updateAppliedFilters()
+  },
+  beforeUnmount() {
+    this.appliedFilters = []
   },
   mounted() {
     if (this.filteredProducts && this.filteredProducts.length > 0) {
@@ -422,6 +578,7 @@ export default {
         router.push('/login')
       }
     }
+    this.updateAppliedFilters()
     this.$store
       .dispatch('getProducts')
       .then(() => this.$store.dispatch('getProfile'))
@@ -435,6 +592,12 @@ export default {
       })
   },
   computed: {
+    isPriceRangesSelected() {
+      return this.$store.state.selectedPriceRanges.length > 0
+    },
+    selectedPriceRanges() {
+      return this.$store.state.selectedPriceRanges
+    },
     paginatedProducts() {
       const groupedProducts = this.groupedProducts
       const currentPageIndex = this.currentPage - 1
@@ -567,6 +730,130 @@ export default {
     }
   },
   methods: {
+    removeAllFilters() {
+      this.appliedFilters = []
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false
+      })
+      this.handleCategoryChange()
+      this.handlePriceRangeChange()
+      this.selectedRating = []
+      this.isChecked = false
+      this.handleDiscountChange()
+      const prices = this.$store.state.products.map(product => product.price)
+      this.$store.state.productMin = Math.ceil(Math.min(...prices))
+      this.$store.state.productMax = Math.ceil(Math.max(...prices))
+      this.$store.state.min = Math.ceil(Math.min(...prices))
+      this.$store.state.max = Math.ceil(Math.max(...prices))
+    },
+    removeFilter(filter) {
+      if (filter === 'Discounted Products') {
+        this.isChecked = false
+        this.handleDiscountChange()
+        return
+      } else if (filter.startsWith('Rating')) {
+        const rating = parseInt(filter.split(': ')[1])
+        const index = this.appliedFilters.indexOf(rating)
+        this.selectedRating.splice(index, 1)
+        return
+      } else if (
+        filter.includes('-') ||
+        filter.startsWith('Under') ||
+        filter.includes('&')
+      ) {
+        // const formattedLabel = filter.replace(' - ', '-')
+        const checkbox = document.querySelector(
+          `input[data-price-label="${filter}"]`
+        )
+        if (checkbox) {
+          checkbox.checked = false
+        }
+        this.handlePriceRangeChange()
+        return
+      } else {
+        const checkbox = document.querySelector(
+          `input[data-category-name="${filter}"]`
+        )
+        if (checkbox) {
+          checkbox.checked = false
+          this.handleCategoryChange()
+        }
+      }
+    },
+    updateAppliedFilters() {
+      const filters = []
+      const selectedCategories = this.$store.state.selectedCategories.map(
+        categoryId => {
+          return this.getCategoryLabel(categoryId)
+        }
+      )
+      selectedCategories.forEach(category => {
+        filters.push(category)
+      })
+      if (this.isChecked) {
+        filters.push('Discounted Products')
+      }
+      if (this.$store.state.selectedRating.length > 0) {
+        const selectedRatings = this.$store.state.selectedRating.map(rating => {
+          // filters.push(`${rating}`)
+          return `Rating: ${rating}`
+        })
+        filters.push(...selectedRatings)
+      }
+      const priceRanges = this.$store.state.selectedPriceRanges
+        .map(range => {
+          switch (range) {
+            case 'range1':
+              return 'Under $500'
+            case 'range2':
+              return '$500 - $1000'
+            case 'range3':
+              return '$1000 - $2000'
+            case 'range4':
+              return '$2000 & Above'
+            default:
+              return null
+          }
+        })
+        .filter(range => range !== null)
+
+      if (priceRanges.length > 0) {
+        filters.push(...priceRanges)
+      } else {
+        filters.push(`$${this.$store.state.min} - $${this.$store.state.max}`)
+      }
+      const newFilters = JSON.stringify(filters)
+      if (newFilters !== JSON.stringify(this.appliedFilters)) {
+        this.appliedFilters = filters
+      }
+    },
+    getCategoryLabel(categoryId) {
+      categoryId = parseInt(categoryId)
+      const category = this.categories.find(cat => cat[2] === categoryId)
+      return category ? category[0] : ''
+    },
+    getProductCount(rangeValue) {
+      return this.products.filter(product => {
+        switch (rangeValue) {
+          case 'range1':
+            return product.price <= 500
+          case 'range2':
+            return product.price > 500 && product.price <= 1000
+          case 'range3':
+            return product.price > 1000 && product.price <= 2000
+          case 'range4':
+            return product.price > 2000
+        }
+      }).length
+    },
+    async handlePriceRangeChange() {
+      const selectedPriceRanges = await this.$store.dispatch(
+        'getSelectedPriceRanges'
+      )
+      this.$store.commit('UPDATE_SELECTED_PRICE_RANGES', selectedPriceRanges)
+      this.currentPage = 1
+    },
     handlePageChange(page) {
       this.currentPage = page
     },
@@ -659,3 +946,36 @@ export default {
   }
 }
 </script>
+<style scoped>
+#newsletter {
+  display: flex;
+  width: 200px;
+  height: 50px;
+  margin-top: 4%;
+  margin-left: 30%;
+  margin-bottom: 0;
+  padding: 0;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-repeat: no-repeat;
+  background-color: #ffffff;
+  color: blue;
+}
+
+.custom-btn {
+  text-transform: capitalize;
+  background-color: #7ca8b4;
+  font-size: 12.5px;
+  color: white;
+  max-width: 220px;
+  height: 35px;
+  border-radius: 5px;
+}
+
+.custom-btn:hover {
+  background-color: #d55327 !important;
+  font-size: 12.5px;
+  color: white !important;
+}
+</style>
