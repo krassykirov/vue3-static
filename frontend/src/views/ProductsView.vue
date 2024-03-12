@@ -313,7 +313,7 @@
                 max-height: 200px;
               "
             >
-              <p
+              <div
                 style="
                   font-weight: 500;
                   font-size: 0.9rem;
@@ -321,8 +321,10 @@
                   margin-top: 5px;
                 "
               >
-                Active Filters {{ filteredProducts.length }} Products
-              </p>
+                Active Filters ({{ appliedFilters.length }}) Products ({{
+                  filteredProducts.length
+                }})
+              </div>
               <button
                 v-for="(filter, index) in appliedFilters"
                 :key="index"
@@ -333,12 +335,12 @@
                 {{ filter }}
               </button>
               <hr />
-              <p style="margin-top: 10px; margin-left: 0">
+              <div style="margin-top: 10px; margin-left: 0">
                 <button
                   type="button"
                   class="shadow btn custom-btn"
                   @click="toggleSortOrder"
-                  style="align-items: center; background-color: #7ca8b4"
+                  style="align-items: center"
                 >
                   Sort Price
                   <span
@@ -356,11 +358,11 @@
                   v-if="appliedFilters.length > 0"
                   class="shadow btn custom-btn"
                   @click="removeAllFilters"
-                  style="margin-bottom: 15px; background-color: #d55327"
+                  style="margin-bottom: 15px"
                 >
                   Reset Filters
                 </button>
-              </p>
+              </div>
             </div>
           </template>
           <transition-group name="product-fade">
@@ -396,35 +398,37 @@
               margin-left: 0;
               margin-bottom: 0;
               width: 1187px !important;
-              min-width: 1140px !important;
-              max-height: 170px;
+              max-height: 200px;
             "
           >
-            <p
+            <div
               style="
-                font-weight: 400;
+                font-weight: 500;
                 font-size: 0.9rem;
                 margin-bottom: 0;
                 margin-top: 5px;
               "
             >
-              Active Filters:
-            </p>
+              Active Filters ({{ appliedFilters.length }}) Products ({{
+                filteredProducts.length
+              }})
+            </div>
             <button
               v-for="(filter, index) in appliedFilters"
               :key="index"
-              class="btn btn-outline-secondary btn-sm ml-2"
+              class="shadow btn custom-btn"
               style="margin-bottom: 0; margin-top: 10px"
               @click="removeFilter(filter)"
             >
               {{ filter }}
             </button>
-            <p style="margin-top: 10px; margin-left: 0">
+            <hr />
+            <div style="margin-top: 10px; margin-left: 0">
               <button
                 type="button"
-                class="btn btn-outline-secondary btn-sm ml-2"
+                class="shadow btn custom-btn"
                 @click="toggleSortOrder"
-                style="align-items: center; font-size: 0.9rem"
+                style="align-items: center"
               >
                 Sort Price
                 <span
@@ -438,7 +442,15 @@
                   style="font-size: 0.9rem"
                 ></span>
               </button>
-            </p>
+              <button
+                v-if="appliedFilters.length > 0"
+                class="shadow btn custom-btn"
+                @click="removeAllFilters"
+                style="margin-bottom: 15px"
+              >
+                Reset Filters
+              </button>
+            </div>
           </div>
           <img
             :src="require('@/assets/no_result.gif')"
@@ -965,16 +977,16 @@ export default {
 
 .custom-btn {
   text-transform: capitalize;
-  background-color: #7ca8b4;
+  background-color: #fdfeff;
   font-size: 12.5px;
-  color: white;
+  color: rgb(10, 0, 0);
   max-width: 220px;
   height: 35px;
   border-radius: 5px;
+  border: 1px solid #cfcdcd;
 }
-
 .custom-btn:hover {
-  background-color: #d55327 !important;
+  background-color: #608b95 !important;
   font-size: 12.5px;
   color: white !important;
 }
