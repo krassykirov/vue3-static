@@ -299,101 +299,12 @@
           <img :src="require('@/assets/loading2.gif')" />
         </div>
       </template>
-      <template v-if="filteredProducts && filteredProducts.length > 0">
-        <div class="product-list" id="mycard">
-          <template v-if="appliedFilters && appliedFilters.length > 0">
-            <div
-              class="container"
-              style="
-                margin-top: 4%;
-                border: 1px solid #cfcdcd;
-                margin-left: 0;
-                margin-bottom: 0;
-                width: 1187px !important;
-                max-height: 200px;
-              "
-            >
-              <div
-                style="
-                  font-weight: 500;
-                  font-size: 0.9rem;
-                  margin-bottom: 0;
-                  margin-top: 5px;
-                "
-              >
-                Active Filters ({{ appliedFilters.length }}) Products ({{
-                  filteredProducts.length
-                }})
-              </div>
-              <button
-                v-for="(filter, index) in appliedFilters"
-                :key="index"
-                class="shadow btn custom-btn"
-                style="margin-bottom: 0; margin-top: 10px"
-                @click="removeFilter(filter)"
-              >
-                {{ filter }}
-              </button>
-              <hr />
-              <div style="margin-top: 10px; margin-left: 0">
-                <button
-                  type="button"
-                  class="shadow btn custom-btn"
-                  @click="toggleSortOrder"
-                  style="align-items: center"
-                >
-                  Sort Price
-                  <span
-                    v-if="sortOrder === 'asc'"
-                    class="bi bi-sort-up-alt"
-                    style="font-size: 0.9rem"
-                  ></span>
-                  <span
-                    v-else
-                    class="bi bi-sort-down"
-                    style="font-size: 0.9rem"
-                  ></span>
-                </button>
-                <button
-                  v-if="appliedFilters.length > 0"
-                  class="shadow btn custom-btn"
-                  @click="removeAllFilters"
-                  style="margin-bottom: 15px"
-                >
-                  Reset Filters
-                </button>
-              </div>
-            </div>
-          </template>
-          <transition-group name="product-fade">
-            <!-- Render ProductList if there are filteredProducts -->
-            <ProductList
-              :products="paginatedProducts"
-              :key="products"
-              :currentPage="currentPage"
-              :itemsPerPage="itemsPerPage"
-              :cart="cart"
-              :favorites="favorites"
-              @addToCart="addToCart"
-              @addTofavorites="addTofavorites"
-              @removeFromCart="removeFromCart"
-              @removeFromFavorites="removeFromFavorites"
-              @redirectToItem="redirectToItem"
-              style="justify-content: left; margin-top: 0"
-            />
-          </transition-group>
-        </div>
-      </template>
-      <template
-        v-else-if="
-          !isLoading && filteredProducts && filteredProducts.length === 0
-        "
-      >
-        <div style="align-items: center; margin-left: 0; margin-top: 1%">
+      <div class="container" style="padding-left: 0; margin-left: 0">
+        <template v-if="appliedFilters && appliedFilters.length > 0">
           <div
             class="container"
             style="
-              margin-top: 3%;
+              margin-top: 4%;
               border: 1px solid #cfcdcd;
               margin-left: 0;
               margin-bottom: 0;
@@ -452,43 +363,77 @@
               </button>
             </div>
           </div>
+        </template>
+        <template v-if="filteredProducts && filteredProducts.length > 0">
+          <div class="product-list" id="mycard">
+            <transition-group name="product-fade">
+              <!-- Render ProductList if there are filteredProducts -->
+              <ProductList
+                :products="paginatedProducts"
+                :key="products"
+                :currentPage="currentPage"
+                :itemsPerPage="itemsPerPage"
+                :cart="cart"
+                :favorites="favorites"
+                @addToCart="addToCart"
+                @addTofavorites="addTofavorites"
+                @removeFromCart="removeFromCart"
+                @removeFromFavorites="removeFromFavorites"
+                @redirectToItem="redirectToItem"
+                style="justify-content: left; margin-top: 0"
+              />
+            </transition-group>
+          </div>
+        </template>
+        <template
+          v-else-if="
+            !isLoading && filteredProducts && filteredProducts.length === 0
+          "
+        >
           <img
             :src="require('@/assets/no_result.gif')"
             style="margin-left: 15%"
           />
-        </div>
-      </template>
-    </div>
-    <nav aria-label="Pagination" style="margin-top: 30px">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <button
-            class="page-link"
-            @click="prevPage"
-            :disabled="currentPage === 1"
-          >
-            Prev
-          </button>
-        </li>
-        <!-- Show pages around the current page -->
-        <template v-for="page in visiblePages" :key="page">
-          <li class="page-item" :class="{ active: currentPage === page }">
-            <button class="page-link" @click="setCurrentPage(page)">
-              {{ page }}
-            </button>
-          </li>
         </template>
-        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <button
-            class="page-link"
-            @click="nextPage"
-            :disabled="currentPage === totalPages"
-          >
-            Next
-          </button>
-        </li>
-      </ul>
-    </nav>
+        <nav
+          v-if="filteredProducts.length > 32"
+          aria-label="Pagination"
+          style="margin-top: 30px; margin-left: 30%"
+        >
+          <ul class="pagination justify-content-left">
+            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+              <button
+                class="page-link"
+                @click="prevPage"
+                :disabled="currentPage === 1"
+              >
+                Prev
+              </button>
+            </li>
+            <!-- Show pages around the current page -->
+            <template v-for="page in visiblePages" :key="page">
+              <li class="page-item" :class="{ active: currentPage === page }">
+                <button class="page-link" @click="setCurrentPage(page)">
+                  {{ page }}
+                </button>
+              </li>
+            </template>
+            <li
+              class="page-item"
+              :class="{ disabled: currentPage === totalPages }"
+            >
+              <button
+                class="page-link"
+                @click="nextPage"
+                :disabled="currentPage === totalPages"
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
     <Footer />
     <div
       class="toast"
@@ -590,6 +535,7 @@ export default {
         router.push('/login')
       }
     }
+    this.removeAllFilters()
     this.updateAppliedFilters()
     this.$store
       .dispatch('getProducts')
@@ -748,16 +694,16 @@ export default {
       checkboxes.forEach(checkbox => {
         checkbox.checked = false
       })
-      this.handleCategoryChange()
-      this.handlePriceRangeChange()
-      this.selectedRating = []
-      this.isChecked = false
-      this.handleDiscountChange()
       const prices = this.$store.state.products.map(product => product.price)
       this.$store.state.productMin = Math.ceil(Math.min(...prices))
       this.$store.state.productMax = Math.ceil(Math.max(...prices))
       this.$store.state.min = Math.ceil(Math.min(...prices))
       this.$store.state.max = Math.ceil(Math.max(...prices))
+      this.selectedRating = []
+      this.isChecked = false
+      this.handleCategoryChange()
+      this.handlePriceRangeChange()
+      this.handleDiscountChange()
     },
     removeFilter(filter) {
       if (filter === 'Discounted Products') {
@@ -831,6 +777,11 @@ export default {
         .filter(range => range !== null)
 
       if (priceRanges.length > 0) {
+        const prices = this.$store.state.products.map(product => product.price)
+        this.$store.state.productMin = Math.ceil(Math.min(...prices))
+        this.$store.state.productMax = Math.ceil(Math.max(...prices))
+        this.$store.state.min = Math.ceil(Math.min(...prices))
+        this.$store.state.max = Math.ceil(Math.max(...prices))
         filters.push(...priceRanges)
       } else {
         filters.push(`$${this.$store.state.min} - $${this.$store.state.max}`)
