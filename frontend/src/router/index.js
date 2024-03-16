@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProductsView from '@/views/ProductsView.vue'
+// import ProductsViewTest from '@/views/ProductsViewTest.vue'
 import CategoryComponent from '@/views/CategoryComponent.vue'
 import MyItem from '@/views/MyItemLast.vue'
 import Search from '@/views/SearchVue.vue'
 import CartVueNew from '@/views/CartVueNew.vue'
 import FavoritesVue from '@/views/FavoritesVue.vue'
 import store from '@/store/index.js'
+import NotFound from '@/views/NotFound.vue'
 // import VueCookies from 'vue-cookies'
 // import { jwtDecode } from 'jwt-decode'
 
@@ -115,7 +117,7 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue'),
+    component: NotFound,
     props: route => ({
       itemId: route.params.itemId,
       cart: store.state.cart,
@@ -126,7 +128,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes
 })
 

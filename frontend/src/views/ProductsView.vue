@@ -310,57 +310,97 @@
               margin-bottom: 0;
               width: 1187px !important;
               max-height: 200px;
+              display: flex; /* Use flexbox to arrange items horizontally */
+              flex-direction: column; /* Arrange items in a column */
             "
           >
-            <div
-              style="
-                font-weight: 500;
-                font-size: 0.9rem;
-                margin-bottom: 0;
-                margin-top: 5px;
-              "
-            >
-              Active Filters ({{ appliedFilters.length }}) Products ({{
-                filteredProducts.length
-              }})
-            </div>
-            <button
-              v-for="(filter, index) in appliedFilters"
-              :key="index"
-              class="shadow btn custom-btn"
-              style="margin-bottom: 0; margin-top: 10px"
-              @click="removeFilter(filter)"
-            >
-              {{ filter }}
-            </button>
-            <hr />
-            <div style="margin-top: 10px; margin-left: 0">
+            <!-- Area 1: Filters -->
+            <div>
+              <div
+                style="
+                  font-weight: 500;
+                  font-size: 0.9rem;
+                  margin-bottom: 0;
+                  margin-top: 5px;
+                "
+              >
+                Active Filters ({{ appliedFilters.length }}) Products ({{
+                  paginatedProducts.length
+                }}/{{ filteredProducts.length }}) Page ({{
+                  this.currentPage
+                }}/{{ totalPages }})
+                <!-- Page 2 {{ page2ProductCount }} -->
+              </div>
               <button
-                type="button"
-                class="shadow btn custom-btn"
+                v-for="(filter, index) in appliedFilters"
+                :key="index"
+                class="shadow btn custom-btn remove-filter-btn"
+                :class="{
+                  'remove-filter-btn': filter !== '$' + min + ' - $' + max
+                }"
+                style="
+                  margin-bottom: 0;
+                  margin-top: 10px;
+                  width: 135px;
+                  max-width: 150px;
+                "
+                @click="removeFilter(filter)"
+              >
+                {{ filter }}
+                <i
+                  v-if="
+                    filter !== '$' + min + ' - $' + max ||
+                    min !== productMin ||
+                    max !== productMax
+                  "
+                  class="bi bi-x-circle-fill remove-icon"
+                ></i>
+              </button>
+            </div>
+            <hr />
+
+            <!-- Area 2: Sort button, Reset Button, Select -->
+            <div
+              style="display: flex; flex-direction: row; justify-content: left"
+            >
+              <button
+                v-if="appliedFilters.length > 0"
+                class="shadow btn custom-btn remove-filter-btn"
+                @click="removeAllFilters"
+                style="margin-bottom: 15px; width: 135px"
+              >
+                Reset Filters
+                <i
+                  v-if="appliedFilters.length > 1"
+                  class="bi bi-x-circle-fill remove-icon"
+                ></i>
+              </button>
+              <button
+                class="shadow btn custom-btn remove-filter-btn"
                 @click="toggleSortOrder"
-                style="align-items: center"
+                style="align-items: center; margin-bottom: 15px; width: 135px"
               >
                 Sort Price
                 <span
                   v-if="sortOrder === 'asc'"
-                  class="bi bi-sort-up-alt"
+                  class="bi bi-sort-up-alt align-middle"
                   style="font-size: 0.9rem"
                 ></span>
                 <span
                   v-else
-                  class="bi bi-sort-down"
+                  class="bi bi-sort-down align-middle"
                   style="font-size: 0.9rem"
                 ></span>
               </button>
-              <button
-                v-if="appliedFilters.length > 0"
-                class="shadow btn custom-btn"
-                @click="removeAllFilters"
-                style="margin-bottom: 15px"
+              <select
+                @change="changeItemsPerPage"
+                class="shadow btn custom-btn remove-filter-btn"
+                style="margin-bottom: 15px; width: 135px"
               >
-                Reset Filters
-              </button>
+                <option v-for="option in options" :value="option" :key="option">
+                  {{ option }}
+                </option>
+              </select>
             </div>
           </div>
         </template>
@@ -390,47 +430,47 @@
             !isLoading && filteredProducts && filteredProducts.length === 0
           "
         >
-          <img
-            :src="require('@/assets/no_result.gif')"
-            style="margin-left: 15%"
-          />
+          <div style="align-items: center; margin-left: 10%">
+            <p style="margin-left: 12%; margin-top: 5px; font-size: 15px">
+              No products were found matching your selection. Use fewer filters
+              or remove all
+            </p>
+            <img :src="require('@/assets/no_result.gif')" />
+          </div>
         </template>
         <nav
-          v-if="filteredProducts.length > 32"
+          v-if="totalPages > 1"
           aria-label="Pagination"
-          style="margin-top: 30px; margin-left: 30%"
+          class="pagination"
+          style="margin-top: 30px; margin-left: -190px"
         >
-          <ul class="pagination justify-content-left">
-            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button
-                class="page-link"
-                @click="prevPage"
-                :disabled="currentPage === 1"
-              >
-                Prev
-              </button>
-            </li>
-            <!-- Show pages around the current page -->
+          <button
+            class="arrow"
+            id="prevPage"
+            :disabled="currentPage === 1"
+            @click="prevPage"
+          >
+            ← <span class="nav-text">PREV</span>
+          </button>
+          <div class="pages">
             <template v-for="page in visiblePages" :key="page">
-              <li class="page-item" :class="{ active: currentPage === page }">
-                <button class="page-link" @click="setCurrentPage(page)">
-                  {{ page }}
-                </button>
-              </li>
-            </template>
-            <li
-              class="page-item"
-              :class="{ disabled: currentPage === totalPages }"
-            >
-              <button
-                class="page-link"
-                @click="nextPage"
-                :disabled="currentPage === totalPages"
+              <div
+                class="page-number"
+                :class="{ active: currentPage === page }"
+                @click="setCurrentPage(page)"
               >
-                Next
-              </button>
-            </li>
-          </ul>
+                {{ page }}
+              </div>
+            </template>
+          </div>
+          <button
+            class="arrow"
+            id="nextPage"
+            :disabled="currentPage === totalPages"
+            @click="nextPage"
+          >
+            <span class="nav-text">NEXT</span> →
+          </button>
         </nav>
       </div>
     </div>
@@ -481,7 +521,6 @@ export default {
     ProductList,
     MyNavbar,
     Footer
-    // PriceSlider
   },
   props: {
     isIdle: Boolean,
@@ -495,7 +534,10 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`,
       currentPage: 1,
       itemsPerPage: 32,
+      options: ['32 per page', '64 per page', '100 per page'],
       visiblePageRange: 5,
+      // totalPages: 1,
+      // visiblePages: [],
       isLoading: true,
       appliedFilters: [],
       priceRanges: [
@@ -510,6 +552,9 @@ export default {
     filteredProducts() {
       this.updateAppliedFilters()
     }
+    // paginatedProducts(newValue) {
+    //   this.updatePaginationControls(newValue)
+    // }
   },
   updated() {
     this.updateAppliedFilters()
@@ -557,19 +602,28 @@ export default {
       return this.$store.state.selectedPriceRanges
     },
     paginatedProducts() {
-      const groupedProducts = this.groupedProducts
-      const currentPageIndex = this.currentPage - 1
-      if (currentPageIndex >= 0 && currentPageIndex < groupedProducts.length) {
-        const currentPageProducts = groupedProducts[currentPageIndex]
+      const products = this.$store.getters.filteredProducts
+      const totalItems = products.length
+      const itemsPerPage =
+        totalItems <= this.itemsPerPage ? totalItems : this.itemsPerPage
 
-        const filteredProducts = currentPageProducts.filter(item => {
+      // Calculate the start and end indices for the current page
+      const startIdx =
+        this.currentPage === 1 ? 0 : (this.currentPage - 1) * itemsPerPage
+      const endIdx = startIdx + itemsPerPage
+
+      // Slice the products based on the start and end indices
+      const paginatedAndFilteredProducts = products
+        .slice(startIdx, endIdx)
+        .filter(item => {
+          // Apply filtering conditions
           const categoryCondition =
             this.$store.state.selectedCategories.length === 0 ||
             this.$store.state.selectedCategories.includes(
               String(item.category_id)
             )
           const priceCondition =
-            item.price >= this.$store.state.min &&
+            item.price >= this.$store.getters.min &&
             item.price <= this.$store.state.max
           const ratingCondition =
             this.$store.state.selectedRating.length === 0 ||
@@ -578,29 +632,54 @@ export default {
             )
           const discountCondition =
             !this.$store.state.isDiscountedChecked || item.discount != null
+
           return (
-            priceCondition &&
             categoryCondition &&
+            priceCondition &&
             ratingCondition &&
             discountCondition
           )
         })
-        return filteredProducts
-      }
-      return [] // Return an empty array if page index is out of bounds
-    },
-    groupedProducts() {
-      const itemsPerPage = this.itemsPerPage
-      const filteredProducts = this.$store.getters.filteredProducts
-      const grouped = []
-      for (let i = 0; i < filteredProducts.length; i += itemsPerPage) {
-        const group = filteredProducts.slice(i, i + itemsPerPage)
-        grouped.push(group)
-      }
-      return grouped
+
+      return paginatedAndFilteredProducts
     },
     totalPages() {
-      return Math.ceil(this.filteredProducts.length / this.itemsPerPage)
+      const filteredProducts = this.$store.getters.filteredProducts
+      const itemsPerPage = this.itemsPerPage
+
+      // Filter the products based on the current filters
+      const filteredItems = filteredProducts.filter(item => {
+        const categoryCondition =
+          this.$store.state.selectedCategories.length === 0 ||
+          this.$store.state.selectedCategories.includes(
+            String(item.category_id)
+          )
+
+        const priceCondition =
+          item.price >= this.$store.getters.min &&
+          item.price <= this.$store.state.max
+
+        const ratingCondition =
+          this.$store.state.selectedRating.length === 0 ||
+          this.$store.state.selectedRating.includes(
+            Math.round(item.rating_float)
+          )
+
+        const discountCondition =
+          !this.$store.state.isDiscountedChecked || item.discount != null
+
+        return (
+          categoryCondition &&
+          priceCondition &&
+          ratingCondition &&
+          discountCondition
+        )
+      })
+
+      // Calculate the total number of pages based on the filtered items
+      const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
+
+      return totalPages
     },
     visiblePages() {
       const start = Math.max(1, this.currentPage - this.visiblePageRange)
@@ -610,6 +689,30 @@ export default {
         pages.push(i)
       }
       return pages
+    },
+    page2ProductCount() {
+      const filteredProducts = this.$store.getters.filteredProducts
+      const itemsPerPage = this.itemsPerPage
+      const totalProducts = filteredProducts.length
+      const totalPages = Math.ceil(totalProducts / itemsPerPage)
+
+      // Calculate the number of products on page 2
+      if (totalPages > 1) {
+        const currentPageIndex = this.currentPage - 1
+        if (currentPageIndex === 0) {
+          // If current page is page 1, get the remaining products on page 2
+          return Math.min(totalProducts - itemsPerPage, itemsPerPage)
+        } else if (currentPageIndex === 1) {
+          // If current page is page 2, get all products on this page
+          return Math.min(totalProducts, itemsPerPage)
+        } else {
+          // If current page is beyond page 2, return 0
+          return 0
+        }
+      } else {
+        // If there's only one page, return 0
+        return 0
+      }
     },
     formattedLastActive() {
       if (!this.lastActiveDate) return ''
@@ -688,6 +791,10 @@ export default {
     }
   },
   methods: {
+    changeItemsPerPage(event) {
+      this.itemsPerPage = parseInt(event.target.value)
+      this.setCurrentPage(1)
+    },
     removeAllFilters() {
       this.appliedFilters = []
       const checkboxes = document.querySelectorAll('input[type="checkbox"]')
@@ -695,10 +802,10 @@ export default {
         checkbox.checked = false
       })
       const prices = this.$store.state.products.map(product => product.price)
-      this.$store.state.productMin = Math.ceil(Math.min(...prices))
-      this.$store.state.productMax = Math.ceil(Math.max(...prices))
-      this.$store.state.min = Math.ceil(Math.min(...prices))
-      this.$store.state.max = Math.ceil(Math.max(...prices))
+      const minPrice = Math.floor(Math.min(...prices))
+      const maxPrice = Math.ceil(Math.max(...prices))
+      this.$store.commit('SET_MIN_PRICE', minPrice)
+      this.$store.commit('SET_MAX_PRICE', maxPrice)
       this.selectedRating = []
       this.isChecked = false
       this.handleCategoryChange()
@@ -706,30 +813,43 @@ export default {
       this.handleDiscountChange()
     },
     removeFilter(filter) {
-      if (filter === 'Discounted Products') {
+      if (filter === 'Discounts %') {
         this.isChecked = false
         this.handleDiscountChange()
         return
       } else if (filter.startsWith('Rating')) {
-        const rating = parseInt(filter.split(': ')[1])
-        const index = this.appliedFilters.indexOf(rating)
-        this.selectedRating.splice(index, 1)
+        const rating = Number(filter.split(': ')[1])
+        const index = this.selectedRating.findIndex(item => item === rating)
+        if (index !== -1) {
+          this.selectedRating.splice(index, 1)
+        }
         return
       } else if (
         filter.includes('-') ||
         filter.startsWith('Under') ||
         filter.includes('&')
       ) {
-        // const formattedLabel = filter.replace(' - ', '-')
         const checkbox = document.querySelector(
           `input[data-price-label="${filter}"]`
         )
         if (checkbox) {
           checkbox.checked = false
+          this.handlePriceRangeChange()
+        } else {
+          const prices = this.$store.state.products.map(
+            product => product.price
+          )
+          const minPrice = Math.floor(Math.min(...prices))
+          const maxPrice = Math.ceil(Math.max(...prices))
+          this.$store.commit('SET_MIN_PRICE', minPrice)
+          this.$store.commit('SET_MAX_PRICE', maxPrice)
         }
-        this.handlePriceRangeChange()
         return
-      } else {
+      } else if (
+        ['Laptops', 'Smartwatches', 'TV', 'Smartphones', 'Tablets'].includes(
+          filter
+        )
+      ) {
         const checkbox = document.querySelector(
           `input[data-category-name="${filter}"]`
         )
@@ -741,24 +861,6 @@ export default {
     },
     updateAppliedFilters() {
       const filters = []
-      const selectedCategories = this.$store.state.selectedCategories.map(
-        categoryId => {
-          return this.getCategoryLabel(categoryId)
-        }
-      )
-      selectedCategories.forEach(category => {
-        filters.push(category)
-      })
-      if (this.isChecked) {
-        filters.push('Discounted Products')
-      }
-      if (this.$store.state.selectedRating.length > 0) {
-        const selectedRatings = this.$store.state.selectedRating.map(rating => {
-          // filters.push(`${rating}`)
-          return `Rating: ${rating}`
-        })
-        filters.push(...selectedRatings)
-      }
       const priceRanges = this.$store.state.selectedPriceRanges
         .map(range => {
           switch (range) {
@@ -778,17 +880,37 @@ export default {
 
       if (priceRanges.length > 0) {
         const prices = this.$store.state.products.map(product => product.price)
-        this.$store.state.productMin = Math.ceil(Math.min(...prices))
+        this.$store.state.productMin = Math.floor(Math.min(...prices))
         this.$store.state.productMax = Math.ceil(Math.max(...prices))
-        this.$store.state.min = Math.ceil(Math.min(...prices))
+        this.$store.state.min = Math.floor(Math.min(...prices))
         this.$store.state.max = Math.ceil(Math.max(...prices))
         filters.push(...priceRanges)
       } else {
         filters.push(`$${this.$store.state.min} - $${this.$store.state.max}`)
       }
+      const selectedCategories = this.$store.state.selectedCategories.map(
+        categoryId => {
+          return this.getCategoryLabel(categoryId)
+        }
+      )
+      selectedCategories.forEach(category => {
+        filters.push(category)
+      })
+      if (this.isChecked) {
+        filters.push('Discounts %')
+      }
+      if (this.$store.state.selectedRating.length > 0) {
+        const selectedRatings = this.$store.state.selectedRating.map(rating => {
+          return `Rating: ${rating}`
+        })
+        filters.push(...selectedRatings)
+      }
       const newFilters = JSON.stringify(filters)
       if (newFilters !== JSON.stringify(this.appliedFilters)) {
         this.appliedFilters = filters
+      }
+      if (this.currentPage > this.totalPages) {
+        this.currentPage = 1
       }
     },
     getCategoryLabel(categoryId) {
@@ -797,7 +919,7 @@ export default {
       return category ? category[0] : ''
     },
     getProductCount(rangeValue) {
-      return this.filteredProducts.filter(product => {
+      return this.products.filter(product => {
         switch (rangeValue) {
           case 'range1':
             return product.price <= 500
@@ -816,9 +938,6 @@ export default {
       )
       this.$store.commit('UPDATE_SELECTED_PRICE_RANGES', selectedPriceRanges)
       this.currentPage = 1
-    },
-    handlePageChange(page) {
-      this.currentPage = page
     },
     nextPage() {
       if (this.currentPage < this.totalPages) {
@@ -867,7 +986,7 @@ export default {
       this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      const items = this.$store.getters.filteredProducts // Assuming products are stored in the store
+      const items = this.$store.state.products // Assuming products are stored in the store
       const count = items.reduce((accumulator, item) => {
         const floatRating = parseFloat(item.rating_float)
         const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
@@ -927,7 +1046,6 @@ export default {
 }
 
 .custom-btn {
-  text-transform: capitalize;
   background-color: #fdfeff;
   font-size: 12.5px;
   color: rgb(10, 0, 0);
@@ -935,10 +1053,124 @@ export default {
   height: 35px;
   border-radius: 5px;
   border: 1px solid #cfcdcd;
+  border-bottom: 2px solid darkred;
 }
-.custom-btn:hover {
-  background-color: #608b95 !important;
-  font-size: 12.5px;
-  color: white !important;
+.remove-filter-btn {
+  margin-bottom: 0;
+  margin-top: 10px;
+  border-bottom: 2px solid darkred;
+}
+
+.remove-filter-btn:hover {
+  background-color: #ebeff2;
+  border: 1px solid #cfcdcd;
+  border-bottom: 2px solid darkred;
+}
+.remove-icon {
+  margin-left: 5px;
+  vertical-align: middle;
+  color: darkred;
+}
+
+.remove-filter-btn .remove-icon {
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.remove-filter-btn:hover .remove-icon {
+  opacity: 1;
+  border-bottom: 2px solid darkred;
+}
+.page {
+  width: 300px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.page li {
+  list-style: none;
+  margin: 10px auto;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  width: auto; /* Change width to auto */
+}
+
+.page-number {
+  cursor: pointer;
+  font-size: 1em;
+  background-color: white;
+  color: #999;
+  border-radius: 50%;
+  height: 30px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.4s ease;
+  margin: 2px;
+}
+.pagination .active {
+  font-size: 1.2em;
+  height: 30px;
+  width: 30px;
+  background-color: #0057b3;
+  color: white;
+}
+
+.pagination button {
+  width: 120px;
+  padding: 8px 16px;
+  background-color: #ffffff00;
+  color: #0057b3;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pagination button:hover {
+  color: #0056b3;
+}
+
+.pagination button:disabled {
+  background-color: #ffffff00;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+#prevPage {
+  margin-right: 5px;
+}
+
+#nextPage {
+  margin-left: 5px;
+}
+
+.arrow {
+  font-size: 1.2em;
+}
+
+.nav-text {
+  font-size: 0.7em;
+  letter-spacing: 0.3em;
 }
 </style>

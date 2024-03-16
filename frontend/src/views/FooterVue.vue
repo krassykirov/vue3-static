@@ -1,12 +1,19 @@
 <template>
   <div>
     <section
-      id="newsletter"
+      id="newsletter2"
       class="section-p1"
       style="margin-top: 2%; height: 50px; color: white; cursor: pointer"
       @click="goToTop"
     >
-      <div style="cursor: pointer; padding-left: 45%">Back to Top</div>
+      <div style="cursor: pointer; padding-left: 45%">
+        Back to Top
+        <img
+          class="logo"
+          :src="require('@/assets/back_to_top.png')"
+          style="width: 40px; height: 40px"
+        />
+      </div>
     </section>
 
     <section id="newsletter" class="section-p1" style="margin-top: 1%">
@@ -194,12 +201,29 @@ button.normal {
   justify-content: center;
   align-items: flex-start;
   text-align: center;
+  background-image: url('../assets/laptop-banner.jpeg');
   min-width: 520px;
   height: 40vh;
   background-position: center;
   background-size: cover;
   padding: 30px;
   margin-bottom: 5px;
+}
+
+#sm-banner .banner-box2 {
+  background-image: url('../assets/smartphone-banner.png');
+}
+#sm-banner .banner-box3 {
+  background-image: url('../assets/ipad.jpeg');
+}
+#sm-banner .banner-box4 {
+  background-image: url('../assets/smart-watch-banner.jpg');
+}
+#sm-banner .banner-box5 {
+  background-image: url('../assets/tv-banner.webp');
+}
+#sm-banner .banner-box6 {
+  background-image: url('../assets/smartwatches-banner.webp');
 }
 
 #sm-banner {
@@ -291,6 +315,19 @@ button.white:hover {
   background-repeat: no-repeat;
   background-position: 20% 30%;
   background-color: #041e42;
+}
+
+#newsletter2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-repeat: no-repeat;
+  background-position: 20% 30%;
+  background-color: #386796;
+  color: rgb(10, 0, 0);
+  border-radius: 5px;
+  border: 1px solid #cfcdcd;
 }
 
 #newsletter h4 {

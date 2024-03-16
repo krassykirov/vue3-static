@@ -123,6 +123,10 @@
   </div>
   <template v-else>
     <div style="align-items: center; margin-left: 10%">
+      <p style="margin-left: 22%; margin-top: 5px; font-size: 15px">
+        No products were found matching your selection. Use fewer filters or
+        remove all
+      </p>
       <img :src="require('@/assets/no_result.gif')" />
     </div>
   </template>
