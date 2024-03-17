@@ -983,51 +983,19 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
-      this.scrollToTop()
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--
       }
-      this.scrollToTop()
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
     setCurrentPage(page) {
       this.currentPage = page
       console.log('this.currentPage ', this.currentPage)
-      this.scrollToTop()
-      // if (page < 1) {
-      //   this.currentPage = 1
-      // } else if (page > this.totalPages) {
-      //   this.currentPage = this.totalPages
-      // } else {
-      //   this.currentPage = page
-      // }
-      // this.scrollToTop()
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
-    // updatePaginationControls() {
-    //   if (this.paginatedProducts.length < 32) {
-    //     this.totalPages = 1
-    //     this.currentPage = 1
-    //     // this.visiblePages = [1]
-    //   } else {
-    //     this.totalPages = Math.ceil(
-    //       this.filteredProducts.length / this.itemsPerPage
-    //     )
-    //     if (this.totalPages < this.currentPage) {
-    //       // this.currentPage = this.totalPages
-    //       this.totalPages = 1
-    //       this.currentPage = 1
-    //       this.visiblePages = [1]
-    //     }
-    //     const start = Math.max(1, this.currentPage - this.visiblePageRange)
-    //     const end = Math.min(this.totalPages, start + this.visiblePageRange * 2)
-    //     const pages = []
-    //     for (let i = start; i <= end; i++) {
-    //       pages.push(i)
-    //     }
-    //     this.visiblePages = pages
-    //   }
-    // },
     updateProductRange() {
       const prices = this.$store.state.products.map(product => product.price)
       this.$store.state.productMin = Math.ceil(Math.min(...prices))
@@ -1076,7 +1044,6 @@ export default {
     scrollToTop() {
       window.scrollTo({
         top: 0,
-        left: 0,
         behavior: 'auto'
       })
     },

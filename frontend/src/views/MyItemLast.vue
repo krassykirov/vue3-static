@@ -586,7 +586,7 @@ export default {
           this.getItemRating(item.id)
         })
 
-        this.scrollToTop()
+        window.scrollTo({ top: 0, behavior: 'auto' })
       } catch (error) {
         this.$router.push({ name: 'NotFound' })
       }
