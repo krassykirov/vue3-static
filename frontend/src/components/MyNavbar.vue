@@ -68,9 +68,9 @@
         <div class="input-group" style="width: 700px; margin-top: 20px">
           <input
             class="form-control"
+            required
             type="search"
             id="filter"
-            v-on:keyup="Search()"
             placeholder="Search by Keyword"
             aria-label="Search"
             v-model="searchQuery"
@@ -79,9 +79,6 @@
             <button type="submit" class="btn btn-outline-success">
               <i class="fas fa-search"></i>
             </button>
-            <!-- <button class="btn btn-outline-danger" @submit.prevent="clearSearch">
-              <i class="fas fa-times"></i>
-            </button> -->
           </div>
         </div>
       </form>
@@ -514,8 +511,8 @@ export default {
         const formattedIntegerPart = integerPart.replace(
           /\B(?=(\d{3})+(?!\d))/g,
           '.'
-        ) // Add dots for every 3 digits
-        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+        )
+        const formattedDecimalPart = decimalPart || '00'
 
         return {
           integerPart: formattedIntegerPart,
@@ -527,7 +524,16 @@ export default {
       this.$router.push({ name: 'NewHome' })
     },
     goToAllProducts() {
-      window.location.assign('/products')
+      this.$router.push({ name: 'home' })
+      // window.location.assign('/products')
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      })
+      this.hideCategories()
+    },
+    goToAllOffers() {
+      this.$router.push({ name: 'hometest' })
+      // window.location.assign('/products')
       this.$nextTick(() => {
         window.scrollTo({ top: 0, behavior: 'auto' })
       })
@@ -560,33 +566,28 @@ export default {
         })
       this.hideCategories()
     },
-    Search() {
-      if (
-        this.$route.path.startsWith('/category') ||
-        this.$route.path === '/products'
-      ) {
-        var input, filter, cards, cardContainer, title, i
-        input = document.getElementById('filter')
-        filter = input.value.toUpperCase()
-        cardContainer = document.getElementById('mycard')
-        cards = cardContainer.getElementsByClassName('card')
-        for (i = 0; i < cards.length; i++) {
-          title = cards[i].querySelector('.card-body h6.card-title')
-          if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-            cards[i].style.display = ''
-          } else {
-            cards[i].style.display = 'none'
-          }
-        }
-      }
-    },
+    // Search() {
+    //   if (
+    //     this.$route.path.startsWith('/category') ||
+    //     this.$route.path === '/products'
+    //   ) {
+    //     var input, filter, cards, cardContainer, title, i
+    //     input = document.getElementById('filter')
+    //     filter = input.value.toUpperCase()
+    //     cardContainer = document.getElementById('mycard')
+    //     cards = cardContainer.getElementsByClassName('card')
+    //     for (i = 0; i < cards.length; i++) {
+    //       title = cards[i].querySelector('.card-body h6.card-title')
+    //       if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+    //         cards[i].style.display = ''
+    //       } else {
+    //         cards[i].style.display = 'none'
+    //       }
+    //     }
+    //   }
+    // },
     async search() {
-      if (
-        this.searchQuery.trim() === '' ||
-        !this.searchQuery ||
-        this.$route.path === '/products' ||
-        this.$route.path.startsWith('/category')
-      ) {
+      if (this.searchQuery.trim() === '' || !this.searchQuery) {
         return
       }
       try {
@@ -601,15 +602,14 @@ export default {
         const products = response.data
         if (products.length > 0) {
           this.$store.commit('SET_SEARCH_RESULTS', products)
-          this.$store.state.searchResults.map(product => {
-            return this.$store.dispatch('getItemRating', product.id)
-          })
           this.$store.dispatch(
             'updateMessage',
             `Found ${products.length} results for '${this.searchQuery}'`
           )
           this.$router.push('/search')
         } else {
+          document.getElementById('filter').value =
+            'No result found for this query'
           this.$store.dispatch(
             'updateMessage',
             `Found ${products.length} results for '${this.searchQuery}'`

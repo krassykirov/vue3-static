@@ -16,6 +16,31 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
+    <div class="submenu">
+      <nav
+        aria-label="breadcrumb"
+        style="
+          margin-top: 1%;
+          margin-left: 0;
+          font-size: 14px;
+          --bs-breadcrumb-divider: '|';
+        "
+      >
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item" :class="{ active: isActiveLink('home') }">
+            <a @click="goToAllProducts">All Products</a>
+          </li>
+          <li
+            v-for="(category, index) in categories"
+            :key="index"
+            class="breadcrumb-item"
+            :class="{ active: isActiveCategory(category[0]) }"
+          >
+            <a @click="selectCategory(category[0])">{{ category[0] }}</a>
+          </li>
+        </ol>
+      </nav>
+    </div>
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
@@ -299,12 +324,15 @@
           <img :src="require('@/assets/loading2.gif')" />
         </div>
       </template>
-      <div class="container" style="padding-left: 0; margin-left: 0">
+      <div
+        class="container"
+        style="padding-left: 0; margin-left: 0; margin-top: 0; padding-top: 0"
+      >
         <template v-if="appliedFilters && appliedFilters.length > 0">
           <div
             class="container"
             style="
-              margin-top: 4%;
+              margin-top: 0%;
               border: 1px solid #cfcdcd;
               margin-left: 0;
               margin-bottom: 0;
@@ -324,12 +352,11 @@
                   margin-top: 5px;
                 "
               >
-                Active Filters ({{ appliedFilters.length }}) Products ({{
+                Active Filters ({{ appliedFilters.length }}) Products Found ({{
                   paginatedProducts.length
-                }}/{{ filteredProducts.length }}) Page ({{
-                  this.currentPage
-                }}/{{ totalPages }})
-                <!-- Page 2 {{ page2ProductCount }} -->
+                }}/{{ filteredProducts.length }}) Page({{ this.currentPage }}/{{
+                  totalPages
+                }})
               </div>
               <button
                 v-for="(filter, index) in appliedFilters"
@@ -603,20 +630,13 @@ export default {
     },
     paginatedProducts() {
       const products = this.$store.getters.filteredProducts
-      const totalItems = products.length
-      const itemsPerPage =
-        totalItems <= this.itemsPerPage ? totalItems : this.itemsPerPage
-
-      // Calculate the start and end indices for the current page
-      const startIdx =
-        this.currentPage === 1 ? 0 : (this.currentPage - 1) * itemsPerPage
+      const itemsPerPage = this.itemsPerPage
+      const startIdx = (this.currentPage - 1) * itemsPerPage
       const endIdx = startIdx + itemsPerPage
 
-      // Slice the products based on the start and end indices
       const paginatedAndFilteredProducts = products
         .slice(startIdx, endIdx)
         .filter(item => {
-          // Apply filtering conditions
           const categoryCondition =
             this.$store.state.selectedCategories.length === 0 ||
             this.$store.state.selectedCategories.includes(
@@ -647,8 +667,8 @@ export default {
       const filteredProducts = this.$store.getters.filteredProducts
       const itemsPerPage = this.itemsPerPage
 
-      // Filter the products based on the current filters
-      const filteredItems = filteredProducts.filter(item => {
+      // Filter the products based on all conditions
+      const filteredAndPaginatedProducts = filteredProducts.filter(item => {
         const categoryCondition =
           this.$store.state.selectedCategories.length === 0 ||
           this.$store.state.selectedCategories.includes(
@@ -676,8 +696,10 @@ export default {
         )
       })
 
-      // Calculate the total number of pages based on the filtered items
-      const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
+      // Calculate the total number of pages based on the filtered and paginated products
+      const totalPages = Math.ceil(
+        filteredAndPaginatedProducts.length / itemsPerPage
+      )
 
       return totalPages
     },
@@ -689,30 +711,6 @@ export default {
         pages.push(i)
       }
       return pages
-    },
-    page2ProductCount() {
-      const filteredProducts = this.$store.getters.filteredProducts
-      const itemsPerPage = this.itemsPerPage
-      const totalProducts = filteredProducts.length
-      const totalPages = Math.ceil(totalProducts / itemsPerPage)
-
-      // Calculate the number of products on page 2
-      if (totalPages > 1) {
-        const currentPageIndex = this.currentPage - 1
-        if (currentPageIndex === 0) {
-          // If current page is page 1, get the remaining products on page 2
-          return Math.min(totalProducts - itemsPerPage, itemsPerPage)
-        } else if (currentPageIndex === 1) {
-          // If current page is page 2, get all products on this page
-          return Math.min(totalProducts, itemsPerPage)
-        } else {
-          // If current page is beyond page 2, return 0
-          return 0
-        }
-      } else {
-        // If there's only one page, return 0
-        return 0
-      }
     },
     formattedLastActive() {
       if (!this.lastActiveDate) return ''
@@ -791,6 +789,45 @@ export default {
     }
   },
   methods: {
+    isActiveLink(link) {
+      console.log('link', link)
+      return this.$route.name === 'home' || !this.$route.name
+    },
+    isActiveCategory(category) {
+      return (
+        this.$route.name === 'category' &&
+        this.$route.params.category === category
+      )
+    },
+    goHome() {
+      this.$router.push({ name: 'NewHome' })
+    },
+    goToAllProducts() {
+      this.$router.push({ name: 'home' })
+      // window.location.assign('/products')
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      })
+    },
+    selectCategory(category) {
+      this.$store.commit('SET_SELECTED_BRANDS', [])
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false
+      })
+      this.$store
+        .dispatch('updateProductRange', category)
+        .then(() => {
+          this.$router.push({ name: 'category', params: { category } })
+          window.scrollTo({
+            top: 0,
+            behavior: 'auto'
+          })
+        })
+        .catch(error => {
+          throw error
+        })
+    },
     changeItemsPerPage(event) {
       this.itemsPerPage = parseInt(event.target.value)
       this.setCurrentPage(1)
@@ -940,6 +977,9 @@ export default {
       this.currentPage = 1
     },
     nextPage() {
+      // console.log('this.currentPage', this.currentPage)
+      // console.log('this.total', this.total)
+      // console.log('this.visiblePages', this.visiblePages)
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
@@ -953,8 +993,41 @@ export default {
     },
     setCurrentPage(page) {
       this.currentPage = page
+      console.log('this.currentPage ', this.currentPage)
       this.scrollToTop()
+      // if (page < 1) {
+      //   this.currentPage = 1
+      // } else if (page > this.totalPages) {
+      //   this.currentPage = this.totalPages
+      // } else {
+      //   this.currentPage = page
+      // }
+      // this.scrollToTop()
     },
+    // updatePaginationControls() {
+    //   if (this.paginatedProducts.length < 32) {
+    //     this.totalPages = 1
+    //     this.currentPage = 1
+    //     // this.visiblePages = [1]
+    //   } else {
+    //     this.totalPages = Math.ceil(
+    //       this.filteredProducts.length / this.itemsPerPage
+    //     )
+    //     if (this.totalPages < this.currentPage) {
+    //       // this.currentPage = this.totalPages
+    //       this.totalPages = 1
+    //       this.currentPage = 1
+    //       this.visiblePages = [1]
+    //     }
+    //     const start = Math.max(1, this.currentPage - this.visiblePageRange)
+    //     const end = Math.min(this.totalPages, start + this.visiblePageRange * 2)
+    //     const pages = []
+    //     for (let i = start; i <= end; i++) {
+    //       pages.push(i)
+    //     }
+    //     this.visiblePages = pages
+    //   }
+    // },
     updateProductRange() {
       const prices = this.$store.state.products.map(product => product.price)
       this.$store.state.productMin = Math.ceil(Math.min(...prices))

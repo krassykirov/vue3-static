@@ -95,6 +95,7 @@
                       :class="getStarClasses(i, product.rating_float)"
                     ></span>
                     <span
+                      v-if="product"
                       :id="'overall-rating' + product.id + '-float'"
                       class="overall-rating"
                       style="font-size: 0.9rem !important"
@@ -206,8 +207,8 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      if (price !== null || price !== undefined) {
-        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+      if (price != null && !isNaN(price)) {
+        const [integerPart, decimalPart] = Number(price).toFixed(2).split('.')
         const formattedIntegerPart = integerPart.replace(
           /\B(?=(\d{3})+(?!\d))/g,
           '.'
@@ -217,6 +218,12 @@ export default {
         return {
           integerPart: formattedIntegerPart,
           decimalPart: formattedDecimalPart
+        }
+      } else {
+        // Handle the case when price is null, undefined, or not a number
+        return {
+          integerPart: '0',
+          decimalPart: '00'
         }
       }
     },

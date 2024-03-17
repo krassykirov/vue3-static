@@ -350,7 +350,8 @@ INPUT[type="checkbox"]:disabled {
 
 .product-container {
   display: flex !important;
-  margin-top: 3%;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .filter-content{
@@ -361,7 +362,7 @@ INPUT[type="checkbox"]:disabled {
   display: flex !important;
   flex-direction: column !important;
   margin-left: 4% !important;
-  margin-top: 3% !important;
+  margin-top: 0 !important;
 }
 
 .product-list {
@@ -488,4 +489,41 @@ INPUT[type="checkbox"]:disabled {
     cursor: not-allowed !important;
     pointer-events: none !important;
     background-color: grey !important;
+  }
+
+  .custom-btn {
+    background-color: #fdfeff;
+    font-size: 12.5px;
+    color: rgb(10, 0, 0);
+    max-width: 220px;
+    height: 35px;
+    border-radius: 5px;
+    border: 1px solid #cfcdcd;
+    border-bottom: 2px solid darkred;
+  }
+
+  .submenu {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-left: 5.5%;
+    margin-top: 3.5%;
+    margin-bottom: 0;
+    height: 50px !important;
+    width: 100%;
+    /* background-color: rgb(224, 215, 215); */
+    /* border-bottom: 1px solid darkred; */
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  ol.breadcrumb li.breadcrumb-item.active > a {
+    text-decoration: underline;
+    color: rgb(67, 152, 217);
+  }
+  ol.breadcrumb li.breadcrumb-item > a {
+    cursor: pointer;
+  }
+  ol.breadcrumb li.breadcrumb-item :hover {
+    color: rgb(67, 152, 217);
+    text-decoration: underline;
   }
