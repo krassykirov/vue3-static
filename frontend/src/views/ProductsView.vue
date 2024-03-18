@@ -336,7 +336,7 @@
               border: 1px solid #cfcdcd;
               margin-left: 0;
               margin-bottom: 0;
-              width: 1187px !important;
+              width: 97.5% !important;
               max-height: 200px;
               display: flex; /* Use flexbox to arrange items horizontally */
               flex-direction: column; /* Arrange items in a column */
