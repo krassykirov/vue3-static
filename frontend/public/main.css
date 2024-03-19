@@ -350,8 +350,8 @@ INPUT[type="checkbox"]:disabled {
 
 .product-container {
   display: flex !important;
-  margin-top: 0;
-  padding-top: 0;
+  margin-top: 0 !important;;
+  padding-top: 0 !important;;
 }
 
 .filter-content{
@@ -366,13 +366,24 @@ INPUT[type="checkbox"]:disabled {
 }
 
 .product-list {
-  padding-right: 1%;
-  padding-left: 0.01%;
-  margin-left: 0;
-  margin-top: 0;
-  display: grid;
+  padding-right: 0 !important;;
+  padding-left: 0 !important;;
+  width: 100% !important;;
+  margin-left: 0 !important;;
+  margin-top: 0 !important;;
+  display: grid !important;;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   text-align: left;
+}
+
+.apply-filter-container {
+  border: 1px solid #cfcdcd !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-height: 200px !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .filter-card {

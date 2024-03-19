@@ -326,23 +326,10 @@
       </template>
       <div
         class="container"
-        style="padding-left: 0; margin-left: 0; margin-top: 0; padding-top: 0"
+        style="margin-left: 0; margin-top: 0; margin: 0; padding: 0"
       >
         <template v-if="appliedFilters && appliedFilters.length > 0">
-          <div
-            class="container"
-            style="
-              margin-top: 0%;
-              border: 1px solid #cfcdcd;
-              margin-left: 0;
-              margin-bottom: 0;
-              width: 97.5% !important;
-              max-height: 200px;
-              display: flex; /* Use flexbox to arrange items horizontally */
-              flex-direction: column; /* Arrange items in a column */
-            "
-          >
-            <!-- Area 1: Filters -->
+          <div class="apply-filter-container">
             <div>
               <div
                 style="
@@ -385,7 +372,6 @@
               </button>
             </div>
             <hr />
-
             <!-- Area 2: Sort button, Reset Button, Select -->
             <div
               style="display: flex; flex-direction: row; justify-content: left"
@@ -1044,6 +1030,7 @@ export default {
     scrollToTop() {
       window.scrollTo({
         top: 0,
+        left: 0,
         behavior: 'auto'
       })
     },
