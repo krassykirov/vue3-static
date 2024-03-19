@@ -368,7 +368,17 @@ INPUT[type="checkbox"]:disabled {
 .product-list {
   padding-right: 0 !important;;
   padding-left: 0 !important;;
-  width: 100% !important;;
+  width: 100% !important;
+  margin-left: 0 !important;;
+  margin-top: 0 !important;;
+  display: grid !important;;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  text-align: left;
+}
+
+.product-list-category {
+  padding-right: 0 !important;;
+  padding-left: 0 !important;;
   margin-left: 0 !important;;
   margin-top: 0 !important;;
   display: grid !important;;

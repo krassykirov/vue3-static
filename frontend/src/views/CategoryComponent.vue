@@ -309,7 +309,7 @@
         </div>
       </template>
       <template v-if="selectedProducts && selectedProducts.length > 0">
-        <div class="product-list" id="mycard" style="margin-top: 0">
+        <div class="product-list-category" id="mycard" style="margin-top: 0">
           <transition-group name="product-fade">
             <ProductList
               v-for="product in selectedProducts"
