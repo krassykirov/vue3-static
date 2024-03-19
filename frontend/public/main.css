@@ -376,15 +376,21 @@ INPUT[type="checkbox"]:disabled {
   text-align: left;
 }
 
+.main-filter-container {
+  width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
 .apply-filter-container {
   border: 1px solid #cfcdcd !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
+  width: 85.5% !important;
+  margin-top: 0 !important;
+  padding-top: 5px !important;
+  padding-left: 5px !important;
   max-height: 200px !important;
-  display: flex !important;
-  flex-direction: column !important;
 }
+
 
 .filter-card {
     margin-bottom: 5px !important;

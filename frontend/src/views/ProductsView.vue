@@ -324,10 +324,7 @@
           <img :src="require('@/assets/loading2.gif')" />
         </div>
       </template>
-      <div
-        class="container"
-        style="margin-left: 0; margin-top: 0; margin: 0; padding: 0"
-      >
+      <div class="main-filter-container">
         <template v-if="appliedFilters && appliedFilters.length > 0">
           <div class="apply-filter-container">
             <div>
