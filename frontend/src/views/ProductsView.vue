@@ -773,8 +773,7 @@ export default {
   },
   methods: {
     isActiveLink(link) {
-      console.log('link', link)
-      return this.$route.name === 'home' || !this.$route.name
+      return this.$route.name === link || !this.$route.name
     },
     isActiveCategory(category) {
       return (

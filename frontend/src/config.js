@@ -1,3 +1,3 @@
 export default {
-  backendEndpoint: 'https://fast3-backend.azurewebsites.net'
+  backendEndpoint: process.env.VUE_APP_BACKEND_ENDPOINT
 }
